@@ -1,0 +1,13 @@
+auth:
+  jwt:
+    expirationDays: 1
+    secret: ${JWT_SECRET}
+    issuer: my-backend
+
+app_user:
+  name: user
+  hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
+
+swagger_user:
+  name: swaggerUser
+  hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna

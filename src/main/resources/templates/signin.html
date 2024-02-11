@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #F8F8F8;
+            font-family: Arial, sans-serif;
+            transform: scale(1.5);
+        }
+
+        .login-center {
+            background: linear-gradient(135deg, #F8F8F8 0%, #A3A3E8 80%);
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .login-center h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-center label, .login-center input {
+            display: block;
+            width: 100%;
+        }
+
+        .login-center input[type="text"],
+        .login-center input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .login-center input[type="submit"] {
+            padding: 10px;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="login-center">
+    <form th:action="@{/login}" method="post">
+        <h2>Login</h2>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required/>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required/>
+        </div>
+        <div>
+            <input type="submit" value="Login"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>
