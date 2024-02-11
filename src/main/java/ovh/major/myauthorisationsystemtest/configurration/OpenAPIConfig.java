@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest;
+package ovh.major.myauthorisationsystemtest.configurration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -20,7 +20,7 @@ import java.util.List;
 @Log4j2
 public class OpenAPIConfig {
 
-    @Value("https://localhost")
+    @Value("http://localhost:8080")
     private String devUrl;
 
 //    @Value("https://api.major.ovh:9666")

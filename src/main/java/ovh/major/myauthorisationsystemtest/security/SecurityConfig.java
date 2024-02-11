@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest;
+package ovh.major.myauthorisationsystemtest.security;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,8 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import ovh.major.myauthorisationsystemtest.jwt.JwtAuthTokenFilter;
-import ovh.major.myauthorisationsystemtest.login.LoginFacade;
-import ovh.major.myauthorisationsystemtest.swager.SwaggerSignInFacade;
+import ovh.major.myauthorisationsystemtest.login.forapi.LoginFacade;
+import ovh.major.myauthorisationsystemtest.login.forswager.SwaggerSignInFacade;
 
 @Configuration
 @Log4j2
@@ -82,44 +82,61 @@ class SecurityConfig  {
         return new SwagerSignInUserDetailsService(swaggerSignInFacade);
     }
 
-    @Order(1)
-    @Bean
-    @Qualifier("authenticationManagerForSwagger")
-    public SecurityFilterChain basicSecurityFilterChain(
-            HttpSecurity httpSecurity) throws Exception {
-        log.info("Basic Security Filter Chain LOADED");
-        httpSecurity
-//                .authenticationManager(authenticationManagerForSwagger())
-                .authenticationManager(authenticationManagerForEndpoints())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) -> authorize
-                    .requestMatchers(
-                            "/v3/**",
-                            "/v3/api-docs",
-                            "/v3/api-docs/**",
-                            "/swagger-ui/index.html",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/api/auth/**",
-                            "/webjars/**"
-                    ).authenticated()
-                    .requestMatchers(
-                            "/login/**",
-                            "/signin").permitAll()
-                    .requestMatchers(HttpMethod.GET,
-                            "/posts").permitAll()//)
-//                .httpBasic(AbstractHttpConfigurer::disable)
-//                .formLogin( httpSecurityFormLoginConfigurer ->
-//                        httpSecurityFormLoginConfigurer
-//                                .loginPage("/signin")
-//                                .successForwardUrl("/swagger-ui/index.html")
-//                                .failureForwardUrl("/signin?error=true")
-//                                .permitAll())
+//    @Order(3)
+//    @Bean
+//    @Qualifier("authenticationManagerForSwagger")
+//    public SecurityFilterChain basicSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        log.info("Basic Security Filter Chain LOADED");
+//        httpSecurity
+////                .authenticationManager(authenticationManagerForSwagger())
+//                .authenticationManager(authenticationManagerForEndpoints())
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests((authorize) -> authorize
+//                    .requestMatchers(
+//                            "/v3/**",
+//                            "/v3/api-docs",
+//                            "/v3/api-docs/**",
+//                            "/swagger-ui/index.html",
+//                            "/swagger-ui/**",
+//                            "/swagger-ui.html",
+//                            "/api/auth/**",
+//                            "/webjars/**"
+//                    ).authenticated()
+//                    .requestMatchers(
+//                            "/login/**",
+//                            "/signin").permitAll()
+//                    .requestMatchers(HttpMethod.GET,
+//                            "/posts").permitAll()//)
+////                .httpBasic(AbstractHttpConfigurer::disable)
+////                .formLogin( httpSecurityFormLoginConfigurer ->
+////                        httpSecurityFormLoginConfigurer
+////                                .loginPage("/signin")
+////                                .successForwardUrl("/swagger-ui/index.html")
+////                                .failureForwardUrl("/signin?error=true")
+////                                .permitAll())
+////                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+////                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+////                .exceptionHandling(Customizer.withDefaults())
+////                .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
+//                    .anyRequest().authenticated())
 //                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+//                .formLogin(AbstractHttpConfigurer::disable)
+//                .httpBasic(AbstractHttpConfigurer::disable)
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .exceptionHandling(Customizer.withDefaults())
 //                .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
-                    .anyRequest().authenticated())
+//        return httpSecurity.build();
+//    }
+
+    @Order(2)
+    @Bean
+    @Qualifier("authenticationManagerForEndpoints")
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        log.info("JWT Security Filter Chain LOADED");
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher("/test")
+                .authenticationManager(authenticationManagerForEndpoints())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -128,26 +145,20 @@ class SecurityConfig  {
                 .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
         return httpSecurity.build();
     }
-
-    @Order(2)
+    @Order(1)
     @Bean
-    @Qualifier("authenticationManagerForEndpoints")
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity httpSecurity) throws Exception {
-        log.info("JWT Security Filter Chain LOADED");
+    public SecurityFilterChain openedEndpoitnsSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        log.info("Opened Security Filter Chain LOADED");
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authenticationManager(authenticationManagerForEndpoints())
-                .authorizeHttpRequests((authorize) -> authorize
-//                    .requestMatchers(
-//                            "/posts/**"
-//                    ).authenticated()
-                    .anyRequest().authenticated())
+                .securityMatcher(
+                        "/login",
+                        "/login/**")
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(Customizer.withDefaults())
-                .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
+                .exceptionHandling(Customizer.withDefaults());
         return httpSecurity.build();
     }
 }

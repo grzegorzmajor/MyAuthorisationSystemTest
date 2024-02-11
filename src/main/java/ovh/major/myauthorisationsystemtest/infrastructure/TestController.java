@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest;
+package ovh.major.myauthorisationsystemtest.infrastructure;
 
 
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @AllArgsConstructor
 @RequestMapping("/test")
-public class TestController {
+class TestController {
 
     @GetMapping
     public ResponseEntity<String> getParagraph(@PathVariable Integer id) {

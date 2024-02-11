@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.login.infrastructure.error;
+package ovh.major.myauthorisationsystemtest.infrastructure.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;

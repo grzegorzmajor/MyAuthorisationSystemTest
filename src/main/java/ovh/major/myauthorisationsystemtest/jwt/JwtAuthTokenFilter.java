@@ -27,17 +27,21 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
-        logger.info("Authorization header is: " + authorization);
-        if (authorization == null) {
-            filterChain.doFilter(request, response);
-            return;
+        String path = request.getRequestURI();
+        if (path.startsWith("/test")) {
+            String authorization = request.getHeader("Authorization");
+            logger.info("Authorization header is: " + authorization);
+            if (authorization == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (authorization.startsWith("Bearer ")) {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                filterChain.doFilter(request, response);
+            }
         }
-        if (authorization.startsWith("Bearer ")) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization);
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            filterChain.doFilter(request, response);
-        }
+        filterChain.doFilter(request, response);
     }
 
     private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String token) {

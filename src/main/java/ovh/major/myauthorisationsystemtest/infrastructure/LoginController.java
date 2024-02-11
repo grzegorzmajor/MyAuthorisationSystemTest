@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.login.infrastructure;
+package ovh.major.myauthorisationsystemtest.infrastructure;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

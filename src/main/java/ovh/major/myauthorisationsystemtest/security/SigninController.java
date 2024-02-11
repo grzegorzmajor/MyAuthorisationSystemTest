@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest;
+package ovh.major.myauthorisationsystemtest.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
