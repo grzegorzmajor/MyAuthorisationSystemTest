@@ -2,5 +2,5 @@ package ovh.major.myauthorisationsystemtest.infrastructure.error;
 
 import org.springframework.http.HttpStatus;
 
-record LoginErrorResponse(String message, HttpStatus status) {
+record ErrorResponse(String message, HttpStatus status) {
 }

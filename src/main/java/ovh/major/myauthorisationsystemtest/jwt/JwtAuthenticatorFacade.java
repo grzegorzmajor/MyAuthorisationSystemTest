@@ -15,45 +15,68 @@ import ovh.major.myauthorisationsystemtest.login.dto.UserResponseDTO;
 import java.time.*;
 
 @Component
-@EnableConfigurationProperties(value = {JwtConfigurationProperties.class})
+@EnableConfigurationProperties(value = {JwtRefreshingTokenConfigurationProperties.class, JwtAccessTokenConfigurationProperties.class})
 public class JwtAuthenticatorFacade {
+    private final AuthenticationManager authenticationManager;
+    private final Clock clock;
+    private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
+    private final JwtAccessTokenConfigurationProperties accessProperties;
+
     public JwtAuthenticatorFacade(
             @Qualifier("authenticationManagerForEndpoints")
             AuthenticationManager authenticationManager,
             Clock clock,
-            JwtConfigurationProperties properties) {
+            JwtRefreshingTokenConfigurationProperties refreshingProperties,
+            JwtAccessTokenConfigurationProperties accessProperties) {
         this.authenticationManager = authenticationManager;
         this.clock = clock;
-        this.properties = properties;
+        this.refreshingProperties = refreshingProperties;
+        this.accessProperties = accessProperties;
     }
-
-    private final AuthenticationManager authenticationManager;
-    private final Clock clock;
-    private final JwtConfigurationProperties properties;
 
     public UserResponseDTO authenticateAndGenerateToken(UserRequestDTO userRequestDto) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userRequestDto.name(), userRequestDto.password()));
         User user = (User) authenticate.getPrincipal();
-        String token = createToken(user);
         String name = user.getUsername();
+        String token = createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
         return UserResponseDTO.builder()
                 .token(token)
                 .name(name)
                 .build();
     }
 
-    public String createToken(User user) {
-        String secretKey = properties.secret();
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+    public String createToken(String userName, JwtTokenIssuer issuer) {
+        Algorithm algorithm;
         Instant now = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
-        Instant expiresAt = now.plus(Duration.ofDays(properties.expirationDays()));
-        String issuer = properties.issuer();
+        Instant expiresAt;
+        switch (issuer) {
+            case REFRESHING_TOKEN : {
+                algorithm = Algorithm.HMAC256(refreshingProperties.secret());
+                expiresAt = now.plus(Duration.ofMinutes(refreshingProperties.expirationMinutes()));
+                break;
+            }
+            case ACCESS_TOKEN : {
+                algorithm = Algorithm.HMAC256(accessProperties.secret());
+                expiresAt = now.plus(Duration.ofMinutes(accessProperties.expirationMinutes()));
+                break;
+            }
+            default : {
+                throw new IllegalArgumentException("Invalid token issuer in JwtAuthenticatorFacade");
+            }
+        }
         return JWT.create()
-                .withSubject(user.getUsername())
+                .withSubject(userName)
                 .withIssuedAt(now)
                 .withExpiresAt(expiresAt)
-                .withIssuer(issuer)
+                .withIssuer(issuer.getValue())
                 .sign(algorithm);
+    }
+
+    public String getTokenIssuer(String refreshingToken) {
+        return JWT.decode(refreshingToken).getIssuer();
+    }
+    public String getTokenSubject(String refreshingToken) {
+        return JWT.decode(refreshingToken).getSubject();
     }
 }

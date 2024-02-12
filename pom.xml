@@ -58,6 +58,11 @@
             <version>${springdoc.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
         <!-- (@ConfigurationProperties) in JwtConfigurationProperties  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

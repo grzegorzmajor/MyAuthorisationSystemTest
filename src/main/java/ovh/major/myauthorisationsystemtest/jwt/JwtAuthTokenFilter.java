@@ -17,26 +17,66 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Enumeration;
 
 @Component
 @Log4j2
 @AllArgsConstructor
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
-    private final JwtConfigurationProperties properties;
+    private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
+    private final JwtAccessTokenConfigurationProperties accessProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
         if (path.startsWith("/test")) {
-            String authorization = request.getHeader("Authorization");
+            String authorization = null;
+            Enumeration<String> authorizations = request.getHeaders("Authorization");
+            while (authorizations.hasMoreElements()) {
+                String authHeader = authorizations.nextElement();
+                log.info("Request has authorization header: " + authHeader);
+                if (authHeader.startsWith("Bearer")) {
+                    authorization = authHeader;
+                }
+            }
             logger.info("Authorization header is: " + authorization);
             if (authorization == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
             if (authorization.startsWith("Bearer ")) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization);
+                if (!getTokenIssuer(authorization.substring(7))
+                        .equals(JwtTokenIssuer.ACCESS_TOKEN.getValue()) ) {
+                    filterChain.doFilter(request, response);
+                }
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.ACCESS_TOKEN);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                filterChain.doFilter(request, response);
+            }
+        }
+
+        if (path.startsWith("/ref")) {
+            String authorization = null;
+            Enumeration<String> authorizations = request.getHeaders("Authorization");
+            while (authorizations.hasMoreElements()) {
+                String authHeader = authorizations.nextElement();
+                log.info("Request has authorization header: " + authHeader);
+                if (authHeader.startsWith("Bearer")) {
+                    authorization = authHeader;
+                }
+            }
+            logger.info("Authorization header is: " + authorization);
+            if (authorization == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if (authorization.startsWith("Bearer ")) {
+                if (!getTokenIssuer(authorization.substring(7))
+                        .equals(JwtTokenIssuer.REFRESHING_TOKEN.getValue()) ) {
+                    filterChain.doFilter(request, response);
+                }
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.REFRESHING_TOKEN);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 filterChain.doFilter(request, response);
             }
@@ -44,14 +84,20 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String token) {
-        String secretKey = properties.secret();
+    private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String token, JwtTokenIssuer issuer) {
+        String secretKey = switch (issuer) {
+            case ACCESS_TOKEN -> accessProperties.secret();
+            case REFRESHING_TOKEN -> refreshingProperties.secret();
+        };
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         JWTVerifier verifier = JWT.require(algorithm)
                 .build();
         DecodedJWT jwt = verifier.verify(token.substring(7));
-        log.info("Decoded JWT is: " + jwt);
         log.info("Decoded JWT subject is: " + jwt.getSubject());
         return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, Collections.emptyList());
+    }
+
+    private String getTokenIssuer(String refreshingToken) {
+        return JWT.decode(refreshingToken).getIssuer();
     }
 }

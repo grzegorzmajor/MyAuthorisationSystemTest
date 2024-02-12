@@ -1,8 +1,13 @@
 auth:
   jwt:
-    expirationDays: 1
-    secret: secret
-    issuer: my-backend
+    refreshing:
+      expirationMinutes: 120
+      secret: secret1
+    access:
+      expirationMinutes: 5
+      secret: secret2
+      requireNotExpired: false
+
 app:
   api-user:
     name: user

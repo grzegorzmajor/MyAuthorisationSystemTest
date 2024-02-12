@@ -8,12 +8,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-class LoginControllerErrorHandler {
+public class ErrorHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseBody
-    public LoginErrorResponse handleBadCredentials() {
-        return new LoginErrorResponse("Bad credentials!", HttpStatus.UNAUTHORIZED);
+    public ErrorResponse handleBadCredentials() {
+        return new ErrorResponse("Bad credentials!", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
+    public ErrorResponse handleTokenExpiration() {
+        return new ErrorResponse("Token was Expired", HttpStatus.UNAUTHORIZED);
     }
 }

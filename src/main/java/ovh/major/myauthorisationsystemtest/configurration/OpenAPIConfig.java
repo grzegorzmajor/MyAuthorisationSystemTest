@@ -26,13 +26,6 @@ public class OpenAPIConfig {
 //    @Value("https://api.major.ovh:9666")
 //    private String prodUrl;
 
-    @Autowired
-    public void printAllAuthenticationManagers(FilterChainProxy filterChainProxy) {
-        filterChainProxy.getFilterChains().forEach(filterChain -> {
-            log.info("\n" + filterChain.getClass() + " Filters: \n" +filterChain.getFilters().stream().map(filter -> filter.getClass().getName()).reduce((a, b) -> a + "\n" + b).orElse("No filters"));
-        });
-    }
-
     @Bean
     public OpenAPI myOpenAPI() {
         Server devServer = new Server();
@@ -58,16 +51,23 @@ public class OpenAPIConfig {
                 //.license(mitLicense);
 
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("Bearer"))
+                .addSecurityItem(new SecurityRequirement().addList("Bearer", ""))
                 .components(
                         new Components()
-                                .addSecuritySchemes("Bearer",
+                                .addSecuritySchemes("RefreshingToken",
                                         new SecurityScheme()
+                                                .name("RefreshingToken")
                                                 .type(SecurityScheme.Type.HTTP)
                                                 .scheme("bearer")
                                                 .bearerFormat("JWT")
                                 )
-                )
+                                .addSecuritySchemes("AccessToken",
+                                        new SecurityScheme()
+                                                .name("AccessToken")
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                ))
                 .info(info)
                 .servers(List.of(devServer));
     }
