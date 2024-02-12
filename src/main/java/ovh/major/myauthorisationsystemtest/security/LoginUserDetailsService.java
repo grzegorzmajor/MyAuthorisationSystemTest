@@ -28,9 +28,9 @@ class LoginUserDetailsService implements UserDetailsService {
 
     private org.springframework.security.core.userdetails.User getUser(SingleUserDTO user) {
         List<String> rolesList = Collections.singletonList(user.role().name());
-        List<GrantedAuthority> authorities = rolesList.stream()
+        List<SimpleGrantedAuthority> authorities = rolesList.stream()
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .toList();
 
         return new org.springframework.security.core.userdetails.User(
                 user.name(),

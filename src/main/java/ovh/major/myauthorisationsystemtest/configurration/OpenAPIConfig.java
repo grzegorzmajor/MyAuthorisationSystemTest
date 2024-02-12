@@ -18,7 +18,7 @@ import java.util.List;
 @Log4j2
 public class OpenAPIConfig {
 
-    @Value("http://localhost:8080")
+    @Value("${app.url}")
     private String devUrl;
     @Bean
     public OpenAPI myOpenAPI() {

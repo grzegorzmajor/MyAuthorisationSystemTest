@@ -15,3 +15,4 @@ app:
   swagger-user:
     name: swaggerUser
     hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
+  url: http://localhost:8080
