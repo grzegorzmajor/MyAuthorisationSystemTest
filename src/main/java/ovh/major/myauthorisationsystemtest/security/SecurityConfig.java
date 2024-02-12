@@ -106,7 +106,7 @@ class SecurityConfig  {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(Customizer.withDefaults())
-                .addFilterBefore(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
+                .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
         return httpSecurity.build();
     }
     @Order(1)

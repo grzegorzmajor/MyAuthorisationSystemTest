@@ -5,6 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,8 +26,9 @@ class TokenRefreshController {
     @GetMapping("/{accessToken}")
     @SecurityRequirement(name = "RefreshingToken")
     public ResponseEntity<String> getRefreshWithAccessToken(
-            @RequestHeader("Authorization") String authentication,
+            HttpServletRequest request,
             @PathVariable() String accessToken) {
+        String authentication = request.getHeader("Authorization");
         if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
             String secretKey = jwtAccessTokenConfigurationProperties.secret();
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
@@ -39,8 +41,8 @@ class TokenRefreshController {
 
     @GetMapping
     @SecurityRequirement(name = "RefreshingToken")
-    public ResponseEntity<String> getRefresh(
-            @RequestHeader("Authorization") String authentication) {
+    public ResponseEntity<String> getRefresh(HttpServletRequest request) {
+        String authentication = request.getHeader("Authorization");
         if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
             throw new MethodNotAllowedException("Method not allowed: application required not expired AccessToken - use endpoint with accessToken value.", null);
         }
