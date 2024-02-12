@@ -26,7 +26,9 @@ public class JwtAuthenticatorFacade {
             @Qualifier("authenticationManagerForEndpoints")
             AuthenticationManager authenticationManager,
             Clock clock,
+            @SuppressWarnings("all") //to suppress the scope warning
             JwtRefreshingTokenConfigurationProperties refreshingProperties,
+            @SuppressWarnings("all") //to suppress the scope warning
             JwtAccessTokenConfigurationProperties accessProperties) {
         this.authenticationManager = authenticationManager;
         this.clock = clock;
@@ -46,7 +48,10 @@ public class JwtAuthenticatorFacade {
                 .build();
     }
 
-    public String createToken(String userName, JwtTokenIssuer issuer) {
+    public String createToken(
+            String userName,
+            @SuppressWarnings("all") //to suppress the scope warning
+            JwtTokenIssuer issuer) {
         Algorithm algorithm;
         Instant now = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
         Instant expiresAt;
