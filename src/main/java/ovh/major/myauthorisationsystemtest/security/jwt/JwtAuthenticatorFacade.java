@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.jwt;
+package ovh.major.myauthorisationsystemtest.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -9,8 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-import ovh.major.myauthorisationsystemtest.login.dto.UserRequestDTO;
-import ovh.major.myauthorisationsystemtest.login.dto.UserResponseDTO;
+import ovh.major.myauthorisationsystemtest.security.login.dto.UserRequestDTO;
+import ovh.major.myauthorisationsystemtest.security.login.dto.UserResponseDTO;
 
 import java.time.*;
 

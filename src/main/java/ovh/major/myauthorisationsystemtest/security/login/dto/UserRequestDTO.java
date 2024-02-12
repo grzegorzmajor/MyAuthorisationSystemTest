@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.login.dto;
+package ovh.major.myauthorisationsystemtest.security.login.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

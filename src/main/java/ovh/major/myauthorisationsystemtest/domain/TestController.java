@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.infrastructure;
+package ovh.major.myauthorisationsystemtest.domain;
 
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

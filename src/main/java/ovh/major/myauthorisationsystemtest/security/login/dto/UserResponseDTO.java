@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.login.dto;
+package ovh.major.myauthorisationsystemtest.security.login.dto;
 
 import lombok.Builder;
 

@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.jwt;
+package ovh.major.myauthorisationsystemtest.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

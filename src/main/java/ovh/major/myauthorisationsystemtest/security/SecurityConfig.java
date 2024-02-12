@@ -1,6 +1,5 @@
 package ovh.major.myauthorisationsystemtest.security;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
-import ovh.major.myauthorisationsystemtest.jwt.JwtAuthTokenFilter;
-import ovh.major.myauthorisationsystemtest.login.forapi.LoginFacade;
-import ovh.major.myauthorisationsystemtest.login.forswager.SwaggerSignInFacade;
+import ovh.major.myauthorisationsystemtest.security.jwt.JwtAuthTokenFilter;
+import ovh.major.myauthorisationsystemtest.security.login.forapi.ApiLoginFacade;
+import ovh.major.myauthorisationsystemtest.security.login.forswager.SwaggerSignInFacade;
 
 @Configuration
 @Log4j2
@@ -32,7 +31,7 @@ class SecurityConfig  {
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
 
     private final SwaggerSignInFacade swaggerSignInFacade;
-    private final LoginFacade loginFacade;
+    private final ApiLoginFacade loginFacade;
 
     @Bean("authenticationManagerForSwagger")
     @Primary
@@ -57,7 +56,7 @@ class SecurityConfig  {
     }
 
     @Bean
-    public UserDetailsService userDetailsServiceForEndpoints(LoginFacade loginFacade) {
+    public UserDetailsService userDetailsServiceForEndpoints(ApiLoginFacade loginFacade) {
         return new LoginUserDetailsService(loginFacade);
     }
 

@@ -8,11 +8,9 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.web.FilterChainProxy;
 
 import java.util.List;
 
@@ -22,33 +20,22 @@ public class OpenAPIConfig {
 
     @Value("http://localhost:8080")
     private String devUrl;
-
-//    @Value("https://api.major.ovh:9666")
-//    private String prodUrl;
-
     @Bean
     public OpenAPI myOpenAPI() {
         Server devServer = new Server();
         devServer.setUrl(devUrl);
         devServer.setDescription("Server URL in Development environment");
 
-//        Server prodServer = new Server();
-//        prodServer.setUrl(prodUrl);
-//        prodServer.setDescription("Server URL in Production environment");
-
         Contact contact = new Contact();
         contact.setEmail("grzegorz@major.ovh");
         contact.setName("Grzegorz Major");
         contact.setUrl("https://major.ovh");
 
-        //License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
-
         Info info = new Info()
                 .title("My Authorisation System Application - test")
                 .version("1.0")
                 .contact(contact)
-                .description("This API is my little project for testing solutions for authorisation system.");//.termsOfService("https://www.bezkoder.com/terms");
-                //.license(mitLicense);
+                .description("This API is my little project for testing solutions for authorisation system.");
 
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("Bearer", ""))

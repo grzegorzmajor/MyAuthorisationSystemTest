@@ -1,9 +1,9 @@
-package ovh.major.myauthorisationsystemtest.jwt;
+package ovh.major.myauthorisationsystemtest.security.jwt;
 
 import lombok.Getter;
 
 @Getter
-public enum JwtTokenIssuer {
+enum JwtTokenIssuer {
     ACCESS_TOKEN("LogToLife:AccessToken"),
     REFRESHING_TOKEN("LogToLife:RefreshingToken");
 

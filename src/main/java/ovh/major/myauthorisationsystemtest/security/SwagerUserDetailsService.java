@@ -5,8 +5,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import ovh.major.myauthorisationsystemtest.login.dto.SingleUserDTO;
-import ovh.major.myauthorisationsystemtest.login.forswager.SwaggerSignInFacade;
+import ovh.major.myauthorisationsystemtest.security.login.dto.SingleUserDTO;
+import ovh.major.myauthorisationsystemtest.security.login.forswager.SwaggerSignInFacade;
 
 @AllArgsConstructor
 class SwagerUserDetailsService implements UserDetailsService {

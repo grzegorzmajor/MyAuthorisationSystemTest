@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.infrastructure;
+package ovh.major.myauthorisationsystemtest.security.jwt;
 
 
 import com.auth0.jwt.JWT;
@@ -12,9 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.MethodNotAllowedException;
-import ovh.major.myauthorisationsystemtest.jwt.JwtAccessTokenConfigurationProperties;
-import ovh.major.myauthorisationsystemtest.jwt.JwtAuthenticatorFacade;
-import ovh.major.myauthorisationsystemtest.jwt.JwtTokenIssuer;
 
 @RestController
 @Log4j2

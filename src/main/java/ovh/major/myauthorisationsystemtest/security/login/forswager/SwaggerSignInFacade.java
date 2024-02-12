@@ -1,20 +1,20 @@
-package ovh.major.myauthorisationsystemtest.login.forswager;
+package ovh.major.myauthorisationsystemtest.security.login.forswager;
 
 
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
-import ovh.major.myauthorisationsystemtest.security.Role;
-import ovh.major.myauthorisationsystemtest.login.dto.SingleUserDTO;
+import ovh.major.myauthorisationsystemtest.security.login.dto.SingleUserDTO;
+import ovh.major.myauthorisationsystemtest.security.login.enums.Role;
 
 
 @Component
 @AllArgsConstructor
-@EnableConfigurationProperties(value = {SwaggerUser.class})
+@EnableConfigurationProperties(value = {SingleSwaggerUser.class})
 public class SwaggerSignInFacade {
 
-    private final SwaggerUser swaggerUser;
+    private final SingleSwaggerUser swaggerUser;
 
     public SingleUserDTO findByName(String username) {
          if (swaggerUser.name().equals(username)) {

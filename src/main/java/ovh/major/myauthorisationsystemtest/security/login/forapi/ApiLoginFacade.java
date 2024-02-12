@@ -1,20 +1,20 @@
-package ovh.major.myauthorisationsystemtest.login.forapi;
+package ovh.major.myauthorisationsystemtest.security.login.forapi;
 
 
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
-import ovh.major.myauthorisationsystemtest.security.Role;
-import ovh.major.myauthorisationsystemtest.login.dto.SingleUserDTO;
+import ovh.major.myauthorisationsystemtest.security.login.enums.Role;
+import ovh.major.myauthorisationsystemtest.security.login.dto.SingleUserDTO;
 
 
 @Component
 @AllArgsConstructor
-@EnableConfigurationProperties(value = {SingleUser.class})
-public class LoginFacade {
+@EnableConfigurationProperties(value = {SingleApiUser.class})
+public class ApiLoginFacade {
 
-    private final SingleUser singleUser;
+    private final SingleApiUser singleUser;
 
     public SingleUserDTO findByName(String username) {
         if (singleUser.name().equals(username)) {
