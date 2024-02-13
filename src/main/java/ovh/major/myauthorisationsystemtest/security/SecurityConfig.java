@@ -70,20 +70,11 @@ class SecurityConfig  {
     public SecurityFilterChain basicSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("Basic security filter chain (for swagger only) LOADED");
         httpSecurity
-                .securityMatcher(
-                        "/swagger-ui/index.html")
+                .securityMatcher(PathsForMatchers.SWAGGER_INDEX.getValues())
                 .authenticationManager(authenticationManagerForSwagger())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(
-                        "/v3/**",
-                        "/v3/api-docs",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/index.html",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/api/auth/**",
-                        "/webjars/**").authenticated())
+                    .requestMatchers(PathsForMatchers.SWAGGER_ALL.getValues()).authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -96,9 +87,7 @@ class SecurityConfig  {
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("JWT security filter chain (for all endpoints requiring authorization) LOADED");
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(
-                        "/test",
-                        "/access_token")
+                .securityMatcher(PathsForMatchers.AUTHENTICATED_ENDPOINTS.getValues())
                 .authenticationManager(authenticationManagerForEndpoints())
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
@@ -114,9 +103,7 @@ class SecurityConfig  {
     public SecurityFilterChain openedEndpoitnsSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("Security filter chain for all endpoints that do not require authorization LOADED");
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(
-                        "/login",
-                        "/login/**")
+                .securityMatcher(PathsForMatchers.OPENED_ENDPOINTS.getValues())
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)

@@ -15,8 +15,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ovh.major.myauthorisationsystemtest.security.PathsForMatchers;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 
@@ -31,7 +33,9 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        if (path.startsWith("/test")) {
+        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITHOUT_ACCESS_TOKEN
+                .getValues())
+                        .anyMatch(path::startsWith)) {
             String authorization = null;
             Enumeration<String> authorizations = request.getHeaders("Authorization");
             while (authorizations.hasMoreElements()) {
@@ -57,7 +61,9 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             }
         }
 
-        if (path.startsWith("/access_token")) {
+        if (Arrays.stream(PathsForMatchers.ACCESS_TOKEN
+                        .getValues())
+                .anyMatch(path::startsWith)) {
             String authorization = null;
             Enumeration<String> authorizations = request.getHeaders("Authorization");
             while (authorizations.hasMoreElements()) {
