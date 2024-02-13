@@ -17,31 +17,31 @@ import org.springframework.web.server.MethodNotAllowedException;
 @RestController
 @Log4j2
 @AllArgsConstructor
-@RequestMapping("/ref")
+@RequestMapping("/access_token")
 class TokenRefreshController {
 
     private final JwtAuthenticatorFacade jwtAuthenticatorFacade;
     private final JwtAccessTokenConfigurationProperties jwtAccessTokenConfigurationProperties;
 
-    @GetMapping("/{accessToken}")
+    @GetMapping("/{oldAccessToken}")
     @SecurityRequirement(name = "RefreshingToken")
-    public ResponseEntity<String> getRefreshWithAccessToken(
+    public ResponseEntity<AccessTokenResponseDto> getRefreshWithAccessToken(
             HttpServletRequest request,
-            @PathVariable() String accessToken) {
+            @PathVariable() String oldAccessToken) {
         String authentication = request.getHeader("Authorization");
         if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
             String secretKey = jwtAccessTokenConfigurationProperties.secret();
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
             JWTVerifier verifier = JWT.require(algorithm)
                     .build();
-            verifier.verify(accessToken.substring(7));
+            verifier.verify(oldAccessToken.substring(7));
         }
         return getNewToken(authentication);
     }
 
     @GetMapping
     @SecurityRequirement(name = "RefreshingToken")
-    public ResponseEntity<String> getRefresh(HttpServletRequest request) {
+    public ResponseEntity<AccessTokenResponseDto> getRefresh(HttpServletRequest request) {
         String authentication = request.getHeader("Authorization");
         if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
             throw new MethodNotAllowedException("Method not allowed: application required not expired AccessToken - use endpoint with accessToken value.", null);
@@ -50,7 +50,7 @@ class TokenRefreshController {
     }
 
     @NotNull
-    private ResponseEntity<String> getNewToken(String authentication) {
+    private ResponseEntity<AccessTokenResponseDto> getNewToken(String authentication) {
         String token = authentication.substring(7);
         String issuer = jwtAuthenticatorFacade.getTokenIssuer(token);
         String userName = jwtAuthenticatorFacade.getTokenSubject(token);

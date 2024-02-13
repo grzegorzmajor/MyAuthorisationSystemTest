@@ -41,14 +41,14 @@ public class JwtAuthenticatorFacade {
                 new UsernamePasswordAuthenticationToken(userRequestDto.name(), userRequestDto.password()));
         User user = (User) authenticate.getPrincipal();
         String name = user.getUsername();
-        String token = createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
+        AccessTokenResponseDto responseDto = createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
         return UserResponseDTO.builder()
-                .token(token)
+                .token(responseDto.accessToken())
                 .name(name)
                 .build();
     }
 
-    public String createToken(
+    public AccessTokenResponseDto createToken(
             String userName,
             @SuppressWarnings("all") //to suppress the scope warning
             JwtTokenIssuer issuer) {
@@ -70,12 +70,19 @@ public class JwtAuthenticatorFacade {
                 throw new IllegalArgumentException("Invalid token issuer in JwtAuthenticatorFacade");
             }
         }
-        return JWT.create()
-                .withSubject(userName)
-                .withIssuedAt(now)
-                .withExpiresAt(expiresAt)
-                .withIssuer(issuer.getValue())
-                .sign(algorithm);
+        AccessTokenResponseDto tokenDto = AccessTokenResponseDto.builder()
+                .accessToken(JWT.create()
+                        .withSubject(userName)
+                        .withIssuedAt(now)
+                        .withExpiresAt(expiresAt)
+                        .withIssuer(issuer.getValue())
+                        .sign(algorithm))
+                .expireDate(expiresAt
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate())
+                .userName(userName)
+                .build();
+        return tokenDto;
     }
 
     public String getTokenIssuer(String refreshingToken) {

@@ -57,7 +57,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             }
         }
 
-        if (path.startsWith("/ref")) {
+        if (path.startsWith("/access_token")) {
             String authorization = null;
             Enumeration<String> authorizations = request.getHeaders("Authorization");
             while (authorizations.hasMoreElements()) {

@@ -98,7 +98,7 @@ class SecurityConfig  {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(
                         "/test",
-                        "/ref")
+                        "/access_token")
                 .authenticationManager(authenticationManagerForEndpoints())
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
