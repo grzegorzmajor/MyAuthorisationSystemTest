@@ -70,7 +70,7 @@ public class JwtAuthenticatorFacade {
                 throw new IllegalArgumentException("Invalid token issuer in JwtAuthenticatorFacade");
             }
         }
-        AccessTokenResponseDto tokenDto = AccessTokenResponseDto.builder()
+        return AccessTokenResponseDto.builder()
                 .accessToken(JWT.create()
                         .withSubject(userName)
                         .withIssuedAt(now)
@@ -82,7 +82,6 @@ public class JwtAuthenticatorFacade {
                         .toLocalDate())
                 .userName(userName)
                 .build();
-        return tokenDto;
     }
 
     public String getTokenIssuer(String refreshingToken) {
