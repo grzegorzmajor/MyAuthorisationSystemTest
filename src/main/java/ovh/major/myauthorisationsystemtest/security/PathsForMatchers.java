@@ -25,7 +25,7 @@ public enum PathsForMatchers {
             "/test",
             "/access_token"});
 
-    private String[] values;
+    private final String[] values;
 
     PathsForMatchers(String[] values) {
         this.values = values;
