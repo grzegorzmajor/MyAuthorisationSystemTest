@@ -20,9 +20,11 @@ public enum PathsForMatchers {
             "/login",
             "/login/**"}),
     AUTHENTICATED_ENDPOINTS_WITHOUT_ACCESS_TOKEN(new String[]{
-            "/test"}),
+            "/test",
+            "/test/admin"}),
     AUTHENTICATED_ENDPOINTS(new String[]{
             "/test",
+            "/test/admin",
             "/access_token"});
 
     private final String[] values;

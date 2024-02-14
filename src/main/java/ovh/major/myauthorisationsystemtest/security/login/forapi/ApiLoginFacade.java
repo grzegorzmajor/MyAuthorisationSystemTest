@@ -21,7 +21,7 @@ public class ApiLoginFacade {
             return SingleUserDTO.builder()
                     .name(singleUser.name())
                     .password(singleUser.hashedPassword())
-                    .role(Role.ADMIN)
+                    .role(Role.USER)
                     .build();
         }  else {
             throw new BadCredentialsException("User not found");
