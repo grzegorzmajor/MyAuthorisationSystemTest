@@ -17,7 +17,6 @@ public class CreateTokenService {
 
     public String createToken(
             String userName,
-            //@SuppressWarnings("all") //to suppress the scope warning
             JwtTokenIssuer issuer) {
         Algorithm algorithm;
         Instant now = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
@@ -37,17 +36,13 @@ public class CreateTokenService {
                 throw new IllegalArgumentException("Invalid token issuer in JwtAuthenticatorFacade");
             }
         }
-        String token = JWT.create()
+
+        return JWT.create()
                 .withSubject(userName)
                 .withIssuedAt(now)
                 .withExpiresAt(expiresAt)
                 .withIssuer(issuer.getValue())
                 .sign(algorithm);
-//        String expirationTime = expiresAt
-//                .atZone(ZoneId.systemDefault())
-//                .toString();
-
-        return token;
     }
 
     public String getTokenIssuer(String refreshedToken) {
