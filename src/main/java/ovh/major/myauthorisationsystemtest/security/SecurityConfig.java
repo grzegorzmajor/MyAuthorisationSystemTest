@@ -97,6 +97,7 @@ class SecurityConfig  {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //.exceptionHandling(request -> request.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler))
                 .exceptionHandling(Customizer.withDefaults())
                 .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
         return httpSecurity.build();
