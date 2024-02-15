@@ -17,10 +17,10 @@ class ErrorHandler {
         return new ErrorResponse("Bad credentials!", HttpStatus.UNAUTHORIZED);
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseBody
-    public ErrorResponse handleTokenExpiration() {
-        return new ErrorResponse("Token was Expired", HttpStatus.UNAUTHORIZED);
-    }
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseBody
+//    public ErrorResponse handleTokenExpiration() {
+//        return new ErrorResponse("Token was Expired", HttpStatus.UNAUTHORIZED);
+//    }
 }

@@ -7,6 +7,7 @@ auth:
       expirationMinutes: 5
       secret: secret2
       requireNotExpired: false
+      #requireNotExpired currently not used, may correspond to a different approach to token generation
 
 app:
   api-user:

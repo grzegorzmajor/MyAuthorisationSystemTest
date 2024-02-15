@@ -6,6 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 record JwtAccessTokenConfigurationProperties(
         String secret,
         long expirationMinutes,
-        boolean requireNotExpired
+        boolean requireNotExpired // currently not used, may correspond to a different approach to token generation
 ) {
 }

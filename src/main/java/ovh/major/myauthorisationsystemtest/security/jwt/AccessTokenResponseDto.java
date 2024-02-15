@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Builder
 public record AccessTokenResponseDto(
         String accessToken,
-        LocalDate expireDate,
+        String expireDate,
         String userName
 ) {
 }

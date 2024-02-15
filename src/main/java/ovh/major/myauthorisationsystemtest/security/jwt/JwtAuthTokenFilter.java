@@ -27,12 +27,14 @@ import java.util.Enumeration;
 @AllArgsConstructor
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
+
     private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
     private final JwtAccessTokenConfigurationProperties accessProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
+
+        log.info("JwtAuthTokenFilter started processing request.");String path = request.getRequestURI();
         if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITHOUT_ACCESS_TOKEN
                 .getValues())
                         .anyMatch(path::startsWith)) {
@@ -89,6 +91,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+
+        log.info("JwtAuthTokenFilter finished processing request.");
     }
 
     private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String token, JwtTokenIssuer issuer) {
