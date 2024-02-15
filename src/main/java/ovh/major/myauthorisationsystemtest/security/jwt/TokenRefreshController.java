@@ -48,25 +48,25 @@ public String getAuthorizationHeader(HttpHeaders headers) {
     return null;
 }
 
-    @GetMapping("/{oldAccessToken}")
-    @SecurityRequirement(name = "RefreshingToken")
-    public AccessTokenResponseDto getRefreshWithAccessToken(
-            HttpServletRequest request,
-            @PathVariable() String oldAccessToken) {
-        String authentication = request.getHeader("Authorization");
-        if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
-            String secretKey = jwtAccessTokenConfigurationProperties.secret();
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .build();
-            verifier.verify(oldAccessToken.substring(7));
-        }
-        return getNewToken(authentication);
-    }
+//    @GetMapping("/{oldAccessToken}")
+//    @SecurityRequirement(name = "RefreshingToken")
+//    public AccessTokenResponseDto getRefreshWithAccessToken(
+//            HttpServletRequest request,
+//            @PathVariable() String oldAccessToken) {
+//        String authentication = request.getHeader("Authorization");
+//        if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
+//            String secretKey = jwtAccessTokenConfigurationProperties.secret();
+//            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+//            JWTVerifier verifier = JWT.require(algorithm)
+//                    .build();
+//            verifier.verify(oldAccessToken.substring(7));
+//        }
+//        return getNewToken(authentication);
+//    }
 
     @GetMapping
     @SecurityRequirement(name = "RefreshingToken")
-    public AccessTokenResponseDto getRefresh(HttpServletRequest request) {
+    public String getRefresh(HttpServletRequest request) {
         String authentication = request.getHeader("Authorization");
         if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
             throw new MethodNotAllowedException("Method not allowed: application required not expired AccessToken - use endpoint with accessToken value.", null);
@@ -75,7 +75,7 @@ public String getAuthorizationHeader(HttpHeaders headers) {
     }
 
     @NotNull
-    private AccessTokenResponseDto getNewToken(String authentication) {
+    private String getNewToken(String authentication) {
         String token = authentication.substring(7);
         String issuer = createTokenService.getTokenIssuer(token);
         String userName = createTokenService.getTokenSubject(token);

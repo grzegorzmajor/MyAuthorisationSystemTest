@@ -42,7 +42,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 .anyMatch(path::startsWith)) {
             log.info("JWT AUTHORISATION TOKEN FILTER: Start processing request without access token.");
             String authorization = getAuthorisationBearerHeader(request, "JWT AUTHORISATION TOKEN FILTER: Authorisation header is: ");
-            log.info("Authorization header is: " + authorization);
             if (authorization == null) {
                 log.warn("Authorisation not possible because no Authorisation Header exist in request.");
                 filterChain.doFilter(request, response);
@@ -77,7 +76,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 .anyMatch(path::startsWith)) {
             log.info("JWT AUTHORISATION TOKEN FILTER: Start processing request with access token.");
             String authorization = getAuthorisationBearerHeader(request, "JWT AUTHORISATION TOKEN FILTER: Authorisation header is: ");
-            logger.info("Authorization header is: " + authorization);
             if (authorization == null) {
                 log.warn("Authorisation not possible because no Authorisation Header exist in request.");
                 filterChain.doFilter(request, response);
@@ -107,6 +105,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 }
             }
         }
+        filterChain.doFilter(request, response);
         log.info("JWT AUTHORISATION TOKEN FILTER: Processing request finished.");
     }
 

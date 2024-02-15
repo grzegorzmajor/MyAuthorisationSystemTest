@@ -31,9 +31,9 @@ public class JwtAuthenticatorFacade {
                 new UsernamePasswordAuthenticationToken(userRequestDto.name(), userRequestDto.password()));
         User user = (User) authenticate.getPrincipal();
         String name = user.getUsername();
-        AccessTokenResponseDto responseDto = createTokenService.createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
+        String token = createTokenService.createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
         return UserResponseDTO.builder()
-                .token(responseDto.accessToken())
+                .token(token)
                 .name(name)
                 .build();
     }

@@ -15,7 +15,7 @@ public class CreateTokenService {
     private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
     private final JwtAccessTokenConfigurationProperties accessProperties;
 
-    public AccessTokenResponseDto createToken(
+    public String createToken(
             String userName,
             //@SuppressWarnings("all") //to suppress the scope warning
             JwtTokenIssuer issuer) {
@@ -43,15 +43,11 @@ public class CreateTokenService {
                 .withExpiresAt(expiresAt)
                 .withIssuer(issuer.getValue())
                 .sign(algorithm);
-        String expirationTime = expiresAt
-                .atZone(ZoneId.systemDefault())
-                .toString();
+//        String expirationTime = expiresAt
+//                .atZone(ZoneId.systemDefault())
+//                .toString();
 
-        return AccessTokenResponseDto.builder()
-                .accessToken(token)
-                .expireDate(expirationTime)
-                .userName(userName)
-                .build();
+        return token;
     }
 
     public String getTokenIssuer(String refreshedToken) {
