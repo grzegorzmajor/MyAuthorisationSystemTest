@@ -19,8 +19,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import ovh.major.myauthorisationsystemtest.security.jwt.JwtAccessTokenConfigurationProperties;
 import ovh.major.myauthorisationsystemtest.security.jwt.JwtAuthTokenFilter;
+import ovh.major.myauthorisationsystemtest.security.jwt.JwtRefreshingTokenConfigurationProperties;
 import ovh.major.myauthorisationsystemtest.security.login.forapi.ApiLoginFacade;
 import ovh.major.myauthorisationsystemtest.security.login.forswager.SwaggerSignInFacade;
 
@@ -30,10 +32,10 @@ import ovh.major.myauthorisationsystemtest.security.login.forswager.SwaggerSignI
 @AllArgsConstructor
 class SecurityConfig  {
 
-    private final JwtAuthTokenFilter jwtAuthTokenFilter;
-
     private final SwaggerSignInFacade swaggerSignInFacade;
     private final ApiLoginFacade loginFacade;
+    private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
+    private final JwtAccessTokenConfigurationProperties accessProperties;
 
     @Bean("authenticationManagerForSwagger")
     @Primary
@@ -68,7 +70,7 @@ class SecurityConfig  {
         return new SwagerUserDetailsService(swaggerSignInFacade);
     }
 
-    @Order(3)
+    @Order(1)
     @Bean
     public SecurityFilterChain basicSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("Basic security filter chain (for swagger only) LOADED");
@@ -85,7 +87,7 @@ class SecurityConfig  {
         return httpSecurity.build();
     }
 
-    @Order(2)
+    @Order(3)
     @Bean
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("JWT security filter chain (for all endpoints requiring authorization) LOADED");
@@ -98,10 +100,11 @@ class SecurityConfig  {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(Customizer.withDefaults())
-                .addFilterAfter(jwtAuthTokenFilter, SecurityContextHolderFilter.class);
+                .addFilterAfter(getJwtFilter(),
+                        ExceptionTranslationFilter.class);
         return httpSecurity.build();
     }
-    @Order(1)
+    @Order(2)
     @Bean
     public SecurityFilterChain openedEndpoitnsSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("Security filter chain for all endpoints that do not require authorization LOADED");
@@ -116,5 +119,8 @@ class SecurityConfig  {
                 .exceptionHandling(Customizer.withDefaults());
         return httpSecurity.build();
     }
-}
 
+
+    private JwtAuthTokenFilter getJwtFilter() {
+        return new JwtAuthTokenFilter(refreshingProperties, accessProperties);   }
+}
