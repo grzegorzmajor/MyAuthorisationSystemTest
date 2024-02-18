@@ -37,10 +37,11 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
         log.info("JWT AUTHORISATION TOKEN FILTER: Processing request started.");
         String path = request.getRequestURI();
-        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITHOUT_ACCESS_TOKEN
+        log.info("JWT_AUTHORISATION TOKEN FILTER: matching path: " + path);
+        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITH_ACCESS_TOKEN
                         .getValues())
-                .anyMatch(path::startsWith)) {
-            log.info("JWT AUTHORISATION TOKEN FILTER: Start processing request without access token.");
+                .anyMatch(p -> maching(p, path))) {
+            log.info("JWT AUTHORISATION TOKEN FILTER: Matched request to authorisation with access token.");
             String authorization = getAuthorisationBearerHeader(request);
             if (authorization == null) {
                 log.warn("Authorisation not possible because no Authorisation Header exist in request.");
@@ -71,10 +72,10 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             }
         }
 
-        if (Arrays.stream(PathsForMatchers.ACCESS_TOKEN
+        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITH_REFRESHING_TOKEN
                         .getValues())
-                .anyMatch(path::startsWith)) {
-            log.info("JWT AUTHORISATION TOKEN FILTER: Start processing request with access token.");
+                .anyMatch(p -> maching(p, path))) {
+            log.info("JWT AUTHORISATION TOKEN FILTER: Matched request to authorisation with access token.");
             String authorization = getAuthorisationBearerHeader(request);
             if (authorization == null) {
                 log.warn("Authorisation not possible because no Authorisation Header exist in request.");
@@ -107,6 +108,13 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
         log.info("JWT AUTHORISATION TOKEN FILTER: Processing request finished.");
+    }
+
+    private static boolean maching(String p, String path) {
+        Boolean response = path.startsWith(p.replace("/**", ""));
+        String machedOrNot = response ? " mached" : " not mached";
+        log.info("Patch " + path + " witch " + p + machedOrNot);
+        return response;
     }
 
     private static String getAuthorisationBearerHeader(HttpServletRequest request) {

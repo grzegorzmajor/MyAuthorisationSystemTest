@@ -13,6 +13,9 @@ app:
   api-user:
     name: user
     hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
+  api-user_admin:
+    name: admin
+    hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
   swagger-user:
     name: swaggerUser
     hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna

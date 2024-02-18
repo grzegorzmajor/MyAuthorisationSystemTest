@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.error;
+package ovh.major.myauthorisationsystemtest.security.error;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,6 @@ class ErrorHandler {
     public ErrorResponse handleBadCredentials() {
         return new ErrorResponse("Bad credentials!", HttpStatus.UNAUTHORIZED);
     }
-
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseBody
@@ -32,11 +31,4 @@ class ErrorHandler {
         return new ErrorResponse("Token expired!", HttpStatus.UNAUTHORIZED);
     }
 
-
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    @ExceptionHandler(RuntimeException.class)
-//    @ResponseBody
-//    public ErrorResponse handleTokenExpiration() {
-//        return new ErrorResponse("Token was Expired", HttpStatus.UNAUTHORIZED);
-//    }
 }

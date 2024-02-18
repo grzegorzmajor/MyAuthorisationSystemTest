@@ -11,19 +11,26 @@ import ovh.major.myauthorisationsystemtest.security.login.dto.SingleUserDTO;
 
 @Component
 @AllArgsConstructor
-@EnableConfigurationProperties(value = {SingleApiUser.class})
+@EnableConfigurationProperties(value = {FirstApiUser.class, SecondApiUser.class})
 public class ApiLoginFacade {
 
-    private final SingleApiUser singleUser;
+    private final FirstApiUser firstUser;
+    private final SecondApiUser secondUser;
 
     public SingleUserDTO findByName(String username) {
-        if (singleUser.name().equals(username)) {
+        if (firstUser.name().equals(username)) {
             return SingleUserDTO.builder()
-                    .name(singleUser.name())
-                    .password(singleUser.hashedPassword())
+                    .name(firstUser.name())
+                    .password(firstUser.hashedPassword())
                     .role(Role.USER)
                     .build();
-        }  else {
+        }  else if (secondUser.name().equals(username)) {
+            return SingleUserDTO.builder()
+                    .name(firstUser.name())
+                    .password(firstUser.hashedPassword())
+                    .role(Role.ADMIN)
+                    .build();
+        } else {
             throw new BadCredentialsException("User not found");
         }
     }

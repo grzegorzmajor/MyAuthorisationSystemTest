@@ -52,6 +52,7 @@ class SecurityConfig  {
         return new ProviderManager(daoAuthenticationProvider);
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -72,7 +73,7 @@ class SecurityConfig  {
     public SecurityFilterChain basicSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         log.info("Basic security filter chain (for swagger only) LOADED");
         httpSecurity
-                .securityMatcher(PathsForMatchers.SWAGGER_INDEX.getValues())
+                .securityMatcher(PathsForMatchers.SWAGGER_ALL.getValues())
                 .authenticationManager(authenticationManagerForSwagger())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
@@ -91,7 +92,7 @@ class SecurityConfig  {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(PathsForMatchers.AUTHENTICATED_ENDPOINTS.getValues())
                 .authenticationManager(authenticationManagerForEndpoints())
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers(PathsForMatchers.AUTHENTICATED_ENDPOINTS.getValues()).authenticated())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -106,7 +107,8 @@ class SecurityConfig  {
         log.info("Security filter chain for all endpoints that do not require authorization LOADED");
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(PathsForMatchers.OPENED_ENDPOINTS.getValues())
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .authorizeHttpRequests(authorize ->
+                        authorize.requestMatchers(PathsForMatchers.OPENED_ENDPOINTS.getValues()).permitAll())
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
