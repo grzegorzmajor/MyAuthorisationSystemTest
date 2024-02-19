@@ -31,7 +31,7 @@ class LoginUserDetailsService implements UserDetailsService {
         List<SimpleGrantedAuthority> authorities = rolesList.stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
-        log.info(user.role().name());
+        log.info("LoginUserDetailsService: Logged new user. User " + user.name() + " has role " + user.role().name() + " and authorities " + authorities);
         return new org.springframework.security.core.userdetails.User(
                 user.name(),
                 user.password(),

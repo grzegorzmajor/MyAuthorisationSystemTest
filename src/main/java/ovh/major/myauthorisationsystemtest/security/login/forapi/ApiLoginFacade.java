@@ -26,8 +26,8 @@ public class ApiLoginFacade {
                     .build();
         }  else if (secondUser.name().equals(username)) {
             return SingleUserDTO.builder()
-                    .name(firstUser.name())
-                    .password(firstUser.hashedPassword())
+                    .name(secondUser.name())
+                    .password(secondUser.hashedPassword())
                     .role(Role.ADMIN)
                     .build();
         } else {

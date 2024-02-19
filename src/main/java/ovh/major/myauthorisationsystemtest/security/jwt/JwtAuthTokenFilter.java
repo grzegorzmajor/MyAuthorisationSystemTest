@@ -46,11 +46,17 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             String authorization = getAuthorisationBearerHeader(request);
             if (authorization == null) {
                 log.warn("JWT: Authorisation not possible because no authorisation header exist in request.");
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getOutputStream().println("{ \"error\": \"No token in header!\"}");
                 return;
             }
             if (authorization.startsWith("Bearer ")) {
                 if (!getTokenIssuer(authorization.substring(7)).equals(JwtTokenIssuer.ACCESS_TOKEN.getValue()) ) {
                     log.warn("JWT: Authorisation not possible because token has invalid issuer.");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Invalid token!\"}");
                     return;
                 }
                 try {
@@ -81,11 +87,17 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             String authorization = getAuthorisationBearerHeader(request);
             if (authorization == null) {
                 log.warn("JWT: Authorisation not possible because no Authorisation Header exist in request.");
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getOutputStream().println("{ \"error\": \"No token in header!\"}");
                 return;
             }
             if (authorization.startsWith("Bearer ")) {
                 if (!getTokenIssuer(authorization.substring(7)).equals(JwtTokenIssuer.REFRESHING_TOKEN.getValue()) ) {
                     log.warn("JWT: Authorisation not possible because token has invalid issuer.");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Invalid token!\"}");
                     return;
                 }
                 try {
@@ -107,6 +119,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 }
             }
         }
+        filterChain.doFilter(request, response);
         log.info("JWT: Processing request finished.");
     }
 
