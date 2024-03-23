@@ -2,12 +2,13 @@ package ovh.major.myauthorisationsystemtest.security.jwt;
 
 import lombok.Builder;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @Builder
 public record AccessTokenResponseDto(
         String accessToken,
-        LocalDate expireDate,
+        Timestamp expireDate,
         String userName
 ) {
 }

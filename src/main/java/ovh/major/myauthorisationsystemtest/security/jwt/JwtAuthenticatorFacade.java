@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import ovh.major.myauthorisationsystemtest.security.login.dto.UserRequestDTO;
 import ovh.major.myauthorisationsystemtest.security.login.dto.UserResponseDTO;
 
+import java.sql.Timestamp;
 import java.time.*;
 
 @Component
@@ -77,9 +78,8 @@ public class JwtAuthenticatorFacade {
                         .withExpiresAt(expiresAt)
                         .withIssuer(issuer.getValue())
                         .sign(algorithm))
-                .expireDate(expiresAt
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate())
+                .expireDate(
+                        Timestamp.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant()))
                 .userName(userName)
                 .build();
     }

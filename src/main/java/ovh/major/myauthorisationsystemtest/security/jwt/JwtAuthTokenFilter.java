@@ -54,10 +54,12 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 if (!getTokenIssuer(authorization.substring(7))
                         .equals(JwtTokenIssuer.ACCESS_TOKEN.getValue()) ) {
                     filterChain.doFilter(request, response);
+                    return;
                 }
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.ACCESS_TOKEN);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 filterChain.doFilter(request, response);
+                return;
             }
         }
 
@@ -82,10 +84,12 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 if (!getTokenIssuer(authorization.substring(7))
                         .equals(JwtTokenIssuer.REFRESHING_TOKEN.getValue()) ) {
                     filterChain.doFilter(request, response);
+                    return;
                 }
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.REFRESHING_TOKEN);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 filterChain.doFilter(request, response);
+                return;
             }
         }
         filterChain.doFilter(request, response);

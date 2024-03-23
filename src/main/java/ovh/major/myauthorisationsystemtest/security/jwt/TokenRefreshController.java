@@ -23,22 +23,6 @@ class TokenRefreshController {
     private final JwtAuthenticatorFacade jwtAuthenticatorFacade;
     private final JwtAccessTokenConfigurationProperties jwtAccessTokenConfigurationProperties;
 
-    @GetMapping("/{oldAccessToken}")
-    @SecurityRequirement(name = "RefreshingToken")
-    public ResponseEntity<AccessTokenResponseDto> getRefreshWithAccessToken(
-            HttpServletRequest request,
-            @PathVariable() String oldAccessToken) {
-        String authentication = request.getHeader("Authorization");
-        if (jwtAccessTokenConfigurationProperties.requireNotExpired()){
-            String secretKey = jwtAccessTokenConfigurationProperties.secret();
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .build();
-            verifier.verify(oldAccessToken.substring(7));
-        }
-        return getNewToken(authentication);
-    }
-
     @GetMapping
     @SecurityRequirement(name = "RefreshingToken")
     public ResponseEntity<AccessTokenResponseDto> getRefresh(HttpServletRequest request) {

@@ -35,7 +35,13 @@ public class OpenAPIConfig {
                 .title("My Authorisation System Application - test")
                 .version("1.0")
                 .contact(contact)
-                .description("This API is my little project for testing solutions for authorisation system.");
+                .description("""
+                        This API is my small, simple project for testing authorization system solutions.<br><br>
+                        This is just 1 version on which I tested the solution using a few filter chains annotated with @Order to ensure order.<br><br>
+                        It also includes a double token.<br>
+                        First RefreshingToken, long-term (here 120 minutes) - used only to renew access.<br>
+                        Second AccessToken, short-term (5 minutes) - used to authorize access to the API (here only one test endpoint).
+                        """);
 
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("Bearer", ""))
