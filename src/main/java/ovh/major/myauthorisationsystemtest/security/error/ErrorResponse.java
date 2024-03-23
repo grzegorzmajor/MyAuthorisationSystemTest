@@ -1,4 +1,4 @@
-package ovh.major.myauthorisationsystemtest.error;
+package ovh.major.myauthorisationsystemtest.security.error;
 
 import org.springframework.http.HttpStatus;
 

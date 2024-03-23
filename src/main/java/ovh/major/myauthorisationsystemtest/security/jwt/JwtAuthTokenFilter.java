@@ -2,6 +2,7 @@ package ovh.major.myauthorisationsystemtest.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import jakarta.servlet.FilterChain;
@@ -27,72 +28,120 @@ import java.util.Enumeration;
 @AllArgsConstructor
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
+
     private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
     private final JwtAccessTokenConfigurationProperties accessProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        log.info("JWT AUTHORISATION TOKEN FILTER: Processing request started.");
         String path = request.getRequestURI();
-        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITHOUT_ACCESS_TOKEN
-                .getValues())
-                        .anyMatch(path::startsWith)) {
-            String authorization = null;
-            Enumeration<String> authorizations = request.getHeaders("Authorization");
-            while (authorizations.hasMoreElements()) {
-                String authHeader = authorizations.nextElement();
-                log.info("Request has authorization header: " + authHeader);
-                if (authHeader.startsWith("Bearer")) {
-                    authorization = authHeader;
-                }
-            }
-            logger.info("Authorization header is: " + authorization);
+
+
+        log.info("JWT: Matching path: " + path);
+        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITH_ACCESS_TOKEN
+                        .getValues())
+                .anyMatch(p -> maching(p, path))) {
+            log.info("JWT: Matched request to authorisation with access token.");
+            String authorization = getAuthorisationBearerHeader(request);
             if (authorization == null) {
-                filterChain.doFilter(request, response);
+                log.warn("JWT: Authorisation not possible because no authorisation header exist in request.");
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getOutputStream().println("{ \"error\": \"No token in header!\"}");
                 return;
             }
             if (authorization.startsWith("Bearer ")) {
-                if (!getTokenIssuer(authorization.substring(7))
-                        .equals(JwtTokenIssuer.ACCESS_TOKEN.getValue()) ) {
-                    filterChain.doFilter(request, response);
+                if (!getTokenIssuer(authorization.substring(7)).equals(JwtTokenIssuer.ACCESS_TOKEN.getValue()) ) {
+                    log.warn("JWT: Authorisation not possible because token has invalid issuer.");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Invalid token!\"}");
                     return;
                 }
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.ACCESS_TOKEN);
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                filterChain.doFilter(request, response);
-                return;
+                try {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.ACCESS_TOKEN);
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    filterChain.doFilter(request, response);
+                    log.info("JWT: Processing request finished successfully.");
+                    return;
+                } catch (TokenExpiredException e) {
+                    log.info("JWT: Token expired!.");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Token was expired!\"}");
+                } catch (Exception e) {
+                    log.info("JWT: Something went wrong: " + e.getLocalizedMessage());
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Something went wrong during authorisation: " + e.getLocalizedMessage() + " \"}");
+                }
             }
         }
 
-        if (Arrays.stream(PathsForMatchers.ACCESS_TOKEN
+        log.info("JWT: Matching path: " + path);
+        if (Arrays.stream(PathsForMatchers.AUTHENTICATED_ENDPOINTS_WITH_REFRESHING_TOKEN
                         .getValues())
-                .anyMatch(path::startsWith)) {
-            String authorization = null;
-            Enumeration<String> authorizations = request.getHeaders("Authorization");
-            while (authorizations.hasMoreElements()) {
-                String authHeader = authorizations.nextElement();
-                log.info("Request has authorization header: " + authHeader);
-                if (authHeader.startsWith("Bearer")) {
-                    authorization = authHeader;
-                }
-            }
-            logger.info("Authorization header is: " + authorization);
+                .anyMatch(p -> maching(p, path))) {
+            log.info("JWT: Matched request to authorisation with access token.");
+            String authorization = getAuthorisationBearerHeader(request);
             if (authorization == null) {
-                filterChain.doFilter(request, response);
+                log.warn("JWT: Authorisation not possible because no Authorisation Header exist in request.");
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getOutputStream().println("{ \"error\": \"No token in header!\"}");
                 return;
             }
             if (authorization.startsWith("Bearer ")) {
-                if (!getTokenIssuer(authorization.substring(7))
-                        .equals(JwtTokenIssuer.REFRESHING_TOKEN.getValue()) ) {
-                    filterChain.doFilter(request, response);
+                if (!getTokenIssuer(authorization.substring(7)).equals(JwtTokenIssuer.REFRESHING_TOKEN.getValue()) ) {
+                    log.warn("JWT: Authorisation not possible because token has invalid issuer.");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Invalid token!\"}");
                     return;
                 }
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.REFRESHING_TOKEN);
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                filterChain.doFilter(request, response);
-                return;
+                try {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(authorization, JwtTokenIssuer.REFRESHING_TOKEN);
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    filterChain.doFilter(request, response);
+                    log.info("JWT: Processing request finished successfully.");
+                    return;
+                } catch (TokenExpiredException e) {
+                    log.info("JWT: Token expired!.");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Token was expired!\"}");
+                } catch (Exception e) {
+                    log.info("JWT: Something went wrong: " + e.getLocalizedMessage());
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getOutputStream().println("{ \"error\": \"Something went wrong during authorisation: " + e.getLocalizedMessage() + " \"}");
+                }
             }
         }
         filterChain.doFilter(request, response);
+        log.info("JWT: Processing request finished.");
+    }
+
+    private static boolean maching(String p, String path) {
+        Boolean response = path.startsWith(p.replace("/**", ""));
+        String machedOrNot = response ? " mached" : " not mached";
+        log.info(" with " + p + machedOrNot);
+        return response;
+    }
+
+    private static String getAuthorisationBearerHeader(HttpServletRequest request) {
+        String authorization = null;
+        Enumeration<String> authorizations = request.getHeaders("Authorization");
+        while (authorizations.hasMoreElements()) {
+            String authHeader = authorizations.nextElement();
+            log.info("JWT: Authorisation header is: " + authHeader);
+            if (authHeader.startsWith("Bearer")) {
+                authorization = authHeader;
+            }
+        }
+        return authorization;
     }
 
     private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(String token, JwtTokenIssuer issuer) {

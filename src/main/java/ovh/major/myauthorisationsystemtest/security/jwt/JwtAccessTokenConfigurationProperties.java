@@ -3,9 +3,9 @@ package ovh.major.myauthorisationsystemtest.security.jwt;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(value = "auth.jwt.access")
-record JwtAccessTokenConfigurationProperties(
+public record JwtAccessTokenConfigurationProperties(
         String secret,
         long expirationMinutes,
-        boolean requireNotExpired
+        boolean requireNotExpired // currently not used, may correspond to a different approach to token generation
 ) {
 }

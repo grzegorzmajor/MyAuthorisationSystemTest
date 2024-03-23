@@ -12,29 +12,19 @@ import org.springframework.stereotype.Component;
 import ovh.major.myauthorisationsystemtest.security.login.dto.UserRequestDTO;
 import ovh.major.myauthorisationsystemtest.security.login.dto.UserResponseDTO;
 
-import java.sql.Timestamp;
 import java.time.*;
 
 @Component
 @EnableConfigurationProperties(value = {JwtRefreshingTokenConfigurationProperties.class, JwtAccessTokenConfigurationProperties.class})
 public class JwtAuthenticatorFacade {
     private final AuthenticationManager authenticationManager;
-    private final Clock clock;
-    private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
-    private final JwtAccessTokenConfigurationProperties accessProperties;
+    private final CreateTokenService createTokenService;
 
     public JwtAuthenticatorFacade(
             @Qualifier("authenticationManagerForEndpoints")
-            AuthenticationManager authenticationManager,
-            Clock clock,
-            @SuppressWarnings("all") //to suppress the scope warning
-            JwtRefreshingTokenConfigurationProperties refreshingProperties,
-            @SuppressWarnings("all") //to suppress the scope warning
-            JwtAccessTokenConfigurationProperties accessProperties) {
+            AuthenticationManager authenticationManager, CreateTokenService createTokenService) {
         this.authenticationManager = authenticationManager;
-        this.clock = clock;
-        this.refreshingProperties = refreshingProperties;
-        this.accessProperties = accessProperties;
+        this.createTokenService = createTokenService;
     }
 
     public UserResponseDTO authenticateAndGenerateToken(UserRequestDTO userRequestDto) {
@@ -42,52 +32,10 @@ public class JwtAuthenticatorFacade {
                 new UsernamePasswordAuthenticationToken(userRequestDto.name(), userRequestDto.password()));
         User user = (User) authenticate.getPrincipal();
         String name = user.getUsername();
-        AccessTokenResponseDto responseDto = createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
+        String token = createTokenService.createToken(name, JwtTokenIssuer.REFRESHING_TOKEN);
         return UserResponseDTO.builder()
-                .token(responseDto.accessToken())
+                .token(token)
                 .name(name)
                 .build();
-    }
-
-    public AccessTokenResponseDto createToken(
-            String userName,
-            @SuppressWarnings("all") //to suppress the scope warning
-            JwtTokenIssuer issuer) {
-        Algorithm algorithm;
-        Instant now = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
-        Instant expiresAt;
-        switch (issuer) {
-            case REFRESHING_TOKEN : {
-                algorithm = Algorithm.HMAC256(refreshingProperties.secret());
-                expiresAt = now.plus(Duration.ofMinutes(refreshingProperties.expirationMinutes()));
-                break;
-            }
-            case ACCESS_TOKEN : {
-                algorithm = Algorithm.HMAC256(accessProperties.secret());
-                expiresAt = now.plus(Duration.ofMinutes(accessProperties.expirationMinutes()));
-                break;
-            }
-            default : {
-                throw new IllegalArgumentException("Invalid token issuer in JwtAuthenticatorFacade");
-            }
-        }
-        return AccessTokenResponseDto.builder()
-                .accessToken(JWT.create()
-                        .withSubject(userName)
-                        .withIssuedAt(now)
-                        .withExpiresAt(expiresAt)
-                        .withIssuer(issuer.getValue())
-                        .sign(algorithm))
-                .expireDate(
-                        Timestamp.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant()))
-                .userName(userName)
-                .build();
-    }
-
-    public String getTokenIssuer(String refreshingToken) {
-        return JWT.decode(refreshingToken).getIssuer();
-    }
-    public String getTokenSubject(String refreshingToken) {
-        return JWT.decode(refreshingToken).getSubject();
     }
 }

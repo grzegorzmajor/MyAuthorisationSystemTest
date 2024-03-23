@@ -1,8 +1,8 @@
 package ovh.major.myauthorisationsystemtest.security;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,9 +12,9 @@ import ovh.major.myauthorisationsystemtest.security.login.dto.SingleUserDTO;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Log4j2
 @AllArgsConstructor
 class LoginUserDetailsService implements UserDetailsService {
 
@@ -27,11 +27,11 @@ class LoginUserDetailsService implements UserDetailsService {
     }
 
     private org.springframework.security.core.userdetails.User getUser(SingleUserDTO user) {
-        List<String> rolesList = Collections.singletonList(user.role().name());
-        List<GrantedAuthority> authorities = rolesList.stream()
+        List<String> rolesList = Collections.singletonList("ROLE_" + user.role().name());
+        List<SimpleGrantedAuthority> authorities = rolesList.stream()
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-
+                .toList();
+        log.info("LoginUserDetailsService: Logged new user. User " + user.name() + " has role " + user.role().name() + " and authorities " + authorities);
         return new org.springframework.security.core.userdetails.User(
                 user.name(),
                 user.password(),
