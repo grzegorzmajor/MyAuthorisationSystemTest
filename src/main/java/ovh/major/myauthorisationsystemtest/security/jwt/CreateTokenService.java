@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.time.*;
 
 @Component
@@ -45,10 +46,21 @@ public class CreateTokenService {
                 .sign(algorithm);
     }
 
+    public AccessTokenResponseDto createAccessToken(String userName) {
+        String token = createToken(userName, JwtTokenIssuer.ACCESS_TOKEN);
+        return AccessTokenResponseDto.builder()
+                .accessToken(token)
+                .expireDate(Timestamp.from(getExpireAt(token)))
+                .userName(userName).build();
+    }
+
     public String getTokenIssuer(String refreshedToken) {
         return JWT.decode(refreshedToken).getIssuer();
     }
     public String getTokenSubject(String refreshedToken) {
         return JWT.decode(refreshedToken).getSubject();
+    }
+    public Instant getExpireAt(String token) {
+        return JWT.decode(token).getExpiresAt().toInstant();
     }
 }

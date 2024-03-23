@@ -11,15 +11,15 @@ auth:
 
 app:
   api-user:
-    name: user
+    name: RegularClicker
     hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
   api-user_admin:
-    name: admin
+    name: MasterOfInterface
     hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
   swagger-user:
     name: swaggerUser
     hashedPassword: $2a$10$Luy5a.WpjHIkLy59SjmLkuR88oDdLbvkFbJ.pKC2u0KK1bnwSJuna
-  url: http://localhost:8889
+  url: https://api.major.ovh:28889
 
 server:
   port: 8889

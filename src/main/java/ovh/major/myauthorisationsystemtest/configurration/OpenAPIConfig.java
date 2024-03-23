@@ -32,15 +32,21 @@ public class OpenAPIConfig {
         contact.setUrl("https://major.ovh");
 
         Info info = new Info()
-                .title("My Authorisation System Application - test")
+                .title("My Authorisation System - test")
                 .version("1.0")
                 .contact(contact)
                 .description("""
-                        This API is my small, simple project for testing authorization system solutions.<br><br>
-                        This is just 1 version on which I tested the solution using a few filter chains annotated with @Order to ensure order.<br><br>
-                        It also includes a double token.<br>
-                        First RefreshingToken, long-term (here 120 minutes) - used only to renew access.<br>
-                        Second AccessToken, short-term (5 minutes) - used to authorize access to the API (here only one test endpoint).
+                        This API is my small, simple project for testing authorization solutions.<br><br>
+                        This is just 1 version on which I tested the authorization solution for Spring Boot 3.2.x.<br>
+                        <ul>Assumed use:
+                        <li>several filter chains providing multiple levels of authorization (open endpoints, Swagger base, tokens for endpoints requiring authorization),</li>
+                        <li>different user roles,</li>
+                        <li>dual tokens - RefreshingToken, AccessToken</li></ul><br>
+                        The first RefreshingToken, long-term (here 120 minutes) - is used only to renew access.<br>
+                        The second AccessToken, short-term (5 minutes) - is used to authorize access to the API (here only three test endpoints).<br><br>
+                        If you want to test, two usernames are available: MasterOfInterface - with the admin role, RegularClicker - with the regular user role. The password for both users is the same: pass<br><br>
+                        Happy clicking!<br><br>
+                        If you are a recruiter and you have made it this far, please contact me! Feedback is extremely important to me! Have a nice day and many successful recruitments!
                         """);
 
         return new OpenAPI()

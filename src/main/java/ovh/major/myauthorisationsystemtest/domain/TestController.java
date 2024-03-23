@@ -22,7 +22,6 @@ class TestController {
     public ResponseEntity<TestRecord> getSomethingOpened() {
         String response =  "That everybody can see..";
         return ResponseEntity.ok(TestRecord.builder()
-                //.id(15L)
                 .description(response)
                 .somethingElse("You welcome!")
                 .build());
@@ -33,19 +32,17 @@ class TestController {
     public ResponseEntity<TestRecord> getSomething() {
         String response =  "If you can see this text, You logged in success for rest api.";
         return ResponseEntity.ok(TestRecord.builder()
-                //.id(15L)
                 .description(response)
                 .somethingElse("You welcome!")
                 .build());
     }
 
     @GetMapping("/admin")
-    @PostAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "AccessToken")
     public ResponseEntity<TestRecord> getSomethingAsAdmin() {
         String response =  "If you can see this text, You logged in success for rest api as admin.";
         return ResponseEntity.ok(TestRecord.builder()
-                //.id(15L)
                 .description(response)
                 .somethingElse("You are Admin?")
                 .build());

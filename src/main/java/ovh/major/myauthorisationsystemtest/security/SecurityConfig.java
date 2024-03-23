@@ -27,7 +27,7 @@ import ovh.major.myauthorisationsystemtest.security.login.forapi.ApiLoginFacade;
 import ovh.major.myauthorisationsystemtest.security.login.forswager.SwaggerSignInFacade;
 
 @Configuration
-@EnableMethodSecurity //(prePostEnabled = true, securedEnabled = false)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = false)
 @Log4j2
 @AllArgsConstructor
 class SecurityConfig  {
@@ -61,6 +61,7 @@ class SecurityConfig  {
     }
 
     @Bean
+    @Primary
     public UserDetailsService userDetailsServiceForEndpoints(ApiLoginFacade loginFacade) {
         return new LoginUserDetailsService(loginFacade);
     }
@@ -122,5 +123,9 @@ class SecurityConfig  {
 
 
     private JwtAuthTokenFilter getJwtFilter() {
-        return new JwtAuthTokenFilter(refreshingProperties, accessProperties);   }
+        return new JwtAuthTokenFilter(
+                refreshingProperties,
+                accessProperties,
+                userDetailsServiceForEndpoints(loginFacade));
+    }
 }

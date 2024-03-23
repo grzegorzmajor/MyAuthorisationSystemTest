@@ -13,14 +13,17 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ovh.major.myauthorisationsystemtest.security.PathsForMatchers;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Enumeration;
 
 @Component
@@ -28,9 +31,9 @@ import java.util.Enumeration;
 @AllArgsConstructor
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
-
     private final JwtRefreshingTokenConfigurationProperties refreshingProperties;
     private final JwtAccessTokenConfigurationProperties accessProperties;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -125,9 +128,9 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     }
 
     private static boolean maching(String p, String path) {
-        Boolean response = path.startsWith(p.replace("/**", ""));
-        String machedOrNot = response ? " mached" : " not mached";
-        log.info(" with " + p + machedOrNot);
+        boolean response = path.startsWith(p.replace("/**", ""));
+        String matchedOrNot = response ? " mached" : " not mached";
+        log.info(" with " + p + matchedOrNot);
         return response;
     }
 
@@ -154,7 +157,10 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 .build();
         DecodedJWT jwt = verifier.verify(token.substring(7));
         log.info("Decoded JWT subject is: " + jwt.getSubject());
-        return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, Collections.emptyList());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(jwt.getSubject());
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        log.info("Authorities in JWT token filter: " + authorities);
+        return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, authorities);
     }
 
     private String getTokenIssuer(String refreshingToken) {
